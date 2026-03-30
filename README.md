@@ -2,8 +2,6 @@
 
 REST API for managing LXC containers with NVIDIA GPU MIG slice assignment. Built with C# and .NET 10 on ASP.NET Core.
 
----
-
 ## Description
 
 ContainerManager exposes a REST API that allows you to:
@@ -16,8 +14,6 @@ ContainerManager exposes a REST API that allows you to:
 
 Every request is authenticated via **HMAC-SHA256** and filtered by a **runtime-configurable IP whitelist**.
 
----
-
 ## Requirements
 
 ### Development environment
@@ -27,11 +23,9 @@ Every request is authenticated via **HMAC-SHA256** and filtered by a **runtime-c
 ### Production environment (Linux)
 - Ubuntu 22.04 / 24.04
 - [LXD](https://documentation.ubuntu.com/lxd/en/latest/) installed and configured
-- NVIDIA GPU with MIG support (e.g. A30, A100)
+- NVIDIA GPU with MIG support
 - NVIDIA drivers with `nvidia-smi` available
 - .NET 10 Runtime
-
----
 
 ## Installation
 
@@ -102,8 +96,6 @@ The Scalar UI will be available at `http://localhost:5000/scalar/v1`.
 
 The `ip-whitelist.json` file is monitored in real time — any change is applied **without restarting the application**.
 
----
-
 ## Authentication
 
 Every request must include the following HTTP headers:
@@ -129,8 +121,6 @@ signature = a3f8c2d1...
 
 > The accepted time window is **±30 seconds**. Requests with older timestamps are rejected to prevent replay attacks.
 
----
-
 ## API Endpoints
 
 ### MIG Slices
@@ -149,37 +139,6 @@ signature = a3f8c2d1...
 | `GET` | `/api/containers/{nome}` | Get details of a single container |
 | `POST` | `/api/containers` | Create a new container |
 | `DELETE` | `/api/containers/{nome}` | Delete a container |
-
-### Create container — request body
-
-```json
-{
-  "nome": "my-container",
-  "migUuid": "MIG-05ac6abb-b127-53a3-b247-7d4aa0c11fe2"
-}
-```
-
-### Standard response
-
-```json
-{
-  "success": true,
-  "message": "Container created successfully.",
-  "data": {
-    "id": 1,
-    "nome": "my-container",
-    "stato": "RUNNING",
-    "migUuid": "MIG-05ac6abb-b127-53a3-b247-7d4aa0c11fe2",
-    "migDeviceIndex": 1,
-    "migTipo": "1g.6gb",
-    "vramGb": 6.0,
-    "dataCreazione": "2026-03-30T10:00:00.000Z",
-    "dataModifica": "2026-03-30T10:00:00.000Z"
-  }
-}
-```
-
----
 
 ## Linux Deployment
 
@@ -248,44 +207,6 @@ systemctl status containermanager
 }
 ```
 
----
-
-## Project Structure
-
-```
-ContainerManager/
-├── Controllers/
-│   ├── MigController.cs
-│   └── ContainersController.cs
-├── Services/
-│   ├── IShellService.cs
-│   ├── IMigService.cs
-│   ├── ILxcService.cs
-│   ├── ShellService.cs
-│   ├── DbService.cs
-│   ├── MigService.cs
-│   ├── LxcService.cs
-│   ├── StartupSyncService.cs
-│   └── Mock/
-│       ├── MockShellService.cs
-│       ├── MockMigService.cs
-│       └── MockLxcService.cs
-├── Middleware/
-│   ├── HmacAuthMiddleware.cs
-│   └── IpWhitelistMiddleware.cs
-├── Models/
-│   ├── ContainerRecord.cs
-│   ├── ContainerStato.cs
-│   ├── LxcContainer.cs
-│   ├── MigSlice.cs
-│   └── Dto.cs
-├── ip-whitelist.json
-├── appsettings.json
-└── Program.cs
-```
-
----
-
 ## Database
 
 The SQLite database is created automatically on first startup in the application working directory.
@@ -305,6 +226,7 @@ The SQLite database is created automatically on first startup in the application
 | `data_modifica` | TEXT | Last modified date (ISO 8601) |
 
 > Deleted containers are not physically removed from the database but marked as `DELETED` to preserve history.
+
 
 ---
 
